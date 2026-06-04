@@ -11,6 +11,7 @@
 - `application/libraries/Redis_client.php`：封装 Redis 连接、读写、删除、计数，Redis 不可用时自动降级。
 - `application/core/MY_Controller.php`：封装统一 JSON 响应、分页参数、安全响应头、POST 方法校验。
 - `application/views/users/index.php`：Vue 页面，负责后台列表、筛选、弹窗表单和接口交互。
+- `application/config/api_codes.php`：集中维护 API code key、数字错误码和 language 文案 key 的映射。
 - `application/language/chinese/app_lang.php`、`application/language/chinese/user_lang.php`：集中维护通用响应文案和用户模块提示文案，避免 Controller 中硬编码用户可见字符串。
 - `database/users.sql`：数据库、用户表建表脚本和初始化管理员数据。
 - `database/create_dev_user.sql`：本地开发账号脚本，用于处理 MySQL 8 与旧版 PHP mysqli 的认证兼容问题。
@@ -64,7 +65,7 @@
 
 ## 5. 文案与配置分离
 
-用户可见的成功提示、失败提示和字段校验提示统一放在 CodeIgniter 的 language 文件中，Controller 只保留语言键调用，例如 `user_query_success`、`user_not_found`。
+用户可见的成功提示、失败提示和字段校验提示统一放在 CodeIgniter 的 language 文件中；Controller 只保留语义化 code key，例如 `USER_QUERY_SUCCESS`、`USER_NOT_FOUND`。
 
 这样做有三个目的：
 
@@ -72,7 +73,23 @@
 - 符合 CI3 框架习惯：使用框架自带的 language 机制，而不是照搬 Java 风格重新写一套常量类。
 - 预留扩展空间：后续如果需要英文界面或统一错误码，可以在不改变 Controller 主流程的情况下继续扩展。
 
-## 6. 部署步骤
+## 6. 错误码设计
+
+接口响应增加 `code` 字段，`code` 是给前端和调用方判断业务结果的稳定标识，`message` 是给用户阅读的展示文案。
+
+Controller 中只传语义化 code key，例如 `USER_NOT_FOUND`，由 `application/config/api_codes.php` 转换为数字错误码和 language 文案 key。这样既避免硬编码中文，也避免在业务代码中散落数字错误码。
+
+当前错误码采用 5 位结构：`A BB CC`。
+
+- `A`：错误类型，`2` 表示验证错误，`4` 表示访问错误，`5` 表示服务错误。
+- `BB`：模块编号，`01` 表示用户模块。
+- `CC`：具体错误类型，`02` 表示数据不存在。
+
+例如 `20102` 表示：用户模块的数据不存在错误，即“用户不存在或已删除”。
+
+详细说明见 `docs/error-codes.md`。
+
+## 7. 部署步骤
 
 1. 创建数据库和用户表：执行 `database/users.sql`，默认数据库名为 `ci3_admin`。
 2. 配置 MySQL 连接：默认使用 `ci3_dev / Ci3Local@2026 / ci3_admin`，也可以通过 `CI_DB_HOST`、`CI_DB_USER`、`CI_DB_PASS`、`CI_DB_NAME` 环境变量覆盖。
@@ -83,6 +100,6 @@
 7. 初始化账号：`admin`，初始化密码：`Admin@123456`。
 8. 首次登录或交付演示后，应立即修改初始化密码。
 
-## 7. 自测流程
+## 8. 自测流程
 
 见 `docs/self-test.md`。

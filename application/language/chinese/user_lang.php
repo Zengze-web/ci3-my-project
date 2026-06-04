@@ -17,6 +17,7 @@ $lang['user_create_success'] = '用户创建成功';
 $lang['user_update_success'] = '用户更新成功';
 $lang['user_invalid_id'] = '用户 ID 不合法';
 $lang['user_delete_success'] = '用户已删除';
+$lang['user_operation_failed'] = '用户操作失败';
 $lang['user_password_rule'] = '密码至少 8 位，需包含字母和数字';
 $lang['user_password_weak'] = '密码复杂度不足';
 $lang['user_reset_password_success'] = '密码已重置';

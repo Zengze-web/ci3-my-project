@@ -830,7 +830,7 @@
                 try {
                     result = await response.json();
                 } catch (error) {
-                    throw {message: '接口返回格式异常，请检查服务端日志'};
+                    throw {code: 'CLIENT_PARSE_ERROR', message: '接口返回格式异常，请检查服务端日志'};
                 }
 
                 if (result.csrf) {
@@ -839,6 +839,7 @@
 
                 if (!response.ok || !result.success) {
                     throw {
+                        code: result.code || 'CLIENT_REQUEST_ERROR',
                         message: result.message || '请求失败',
                         errors: result.data && result.data.errors ? result.data.errors : {}
                     };

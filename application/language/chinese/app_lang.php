@@ -10,7 +10,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | 从 language 文件读取，后续需要调整文案或扩展多语言时不用分散修改业务代码。
 |
 */
+$lang['app_success'] = '成功';
 $lang['app_operation_success'] = '操作成功';
 $lang['app_operation_failure'] = '操作失败';
 $lang['app_method_not_allowed'] = '请求方法不允许';
 $lang['app_method_post_required'] = '请使用 POST 请求';
+$lang['app_unknown_error'] = '未知错误';

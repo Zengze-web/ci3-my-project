@@ -75,7 +75,7 @@ class Users extends MY_Controller
         if ($cached !== NULL) {
             $cached['redis_available'] = $this->redis_client->is_available();
             $cached['from_cache'] = TRUE;
-            $this->success_json($cached, $this->lang_text('user_query_success'));
+            $this->success_json($cached, 'USER_QUERY_SUCCESS');
             return;
         }
 
@@ -85,7 +85,7 @@ class Users extends MY_Controller
         $result['from_cache'] = FALSE;
 
         $this->redis_client->set($cacheKey, $result, 30);
-        $this->success_json($result, $this->lang_text('user_query_success'));
+        $this->success_json($result, 'USER_QUERY_SUCCESS');
     }
 
     /**
@@ -105,13 +105,13 @@ class Users extends MY_Controller
         $row = $this->User_model->find($id);
 
         if ( ! $row) {
-            $this->fail_json($this->lang_text('user_not_found'), array(), 404);
+            $this->fail_json('USER_NOT_FOUND', array(), 404);
             return;
         }
 
         $row = $this->format_user_times($row);
         unset($row['password_hash'], $row['deleted_at']);
-        $this->success_json(array('user' => $row), $this->lang_text('user_query_success'));
+        $this->success_json(array('user' => $row), 'USER_QUERY_SUCCESS');
     }
 
     /**
@@ -131,13 +131,13 @@ class Users extends MY_Controller
         $errors = $this->validate_payload($data, 0, TRUE);
 
         if ( ! empty($errors)) {
-            $this->fail_json($this->lang_text('user_form_invalid'), $errors);
+            $this->fail_json('USER_FORM_INVALID', $errors);
             return;
         }
 
         $id = $this->User_model->create($data);
         $this->clear_list_cache();
-        $this->success_json(array('id' => $id), $this->lang_text('user_create_success'));
+        $this->success_json(array('id' => $id), 'USER_CREATE_SUCCESS');
     }
 
     /**
@@ -159,7 +159,7 @@ class Users extends MY_Controller
         $exists = $this->User_model->find($id);
 
         if ( ! $exists) {
-            $this->fail_json($this->lang_text('user_not_found'), array(), 404);
+            $this->fail_json('USER_NOT_FOUND', array(), 404);
             return;
         }
 
@@ -167,13 +167,13 @@ class Users extends MY_Controller
         $errors = $this->validate_payload($data, $id, FALSE);
 
         if ( ! empty($errors)) {
-            $this->fail_json($this->lang_text('user_form_invalid'), $errors);
+            $this->fail_json('USER_FORM_INVALID', $errors);
             return;
         }
 
         $this->User_model->update($id, $data);
         $this->clear_list_cache();
-        $this->success_json(array('id' => $id), $this->lang_text('user_update_success'));
+        $this->success_json(array('id' => $id), 'USER_UPDATE_SUCCESS');
     }
 
     /**
@@ -194,13 +194,13 @@ class Users extends MY_Controller
         $id = (int) $id;
 
         if ($id <= 0) {
-            $this->fail_json($this->lang_text('user_invalid_id'));
+            $this->fail_json('USER_INVALID_ID');
             return;
         }
 
         $this->User_model->soft_delete($id);
         $this->clear_list_cache();
-        $this->success_json(array('id' => $id), $this->lang_text('user_delete_success'));
+        $this->success_json(array('id' => $id), 'USER_DELETE_SUCCESS');
     }
 
     /**
@@ -222,20 +222,20 @@ class Users extends MY_Controller
         $password = safe_trim($this->input->post('password', TRUE));
 
         if ($id <= 0 || ! $this->User_model->find($id)) {
-            $this->fail_json($this->lang_text('user_not_found'), array(), 404);
+            $this->fail_json('USER_NOT_FOUND', array(), 404);
             return;
         }
 
         if ( ! $this->is_strong_password($password)) {
             $this->fail_json(
-                $this->lang_text('user_password_rule'),
+                'USER_PASSWORD_WEAK',
                 array('password' => $this->lang_text('user_password_weak'))
             );
             return;
         }
 
         $this->User_model->reset_password($id, $password);
-        $this->success_json(array('id' => $id), $this->lang_text('user_reset_password_success'));
+        $this->success_json(array('id' => $id), 'USER_RESET_PASSWORD_SUCCESS');
     }
 
     /**
