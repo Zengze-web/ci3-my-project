@@ -98,6 +98,18 @@
             font-weight: 600;
         }
 
+        .required {
+            color: var(--danger);
+            margin-left: 3px;
+        }
+
+        .field-help {
+            margin: -2px 0 7px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
         input,
         select,
         textarea {
@@ -310,7 +322,7 @@
         }
 
         .modal-panel {
-            width: min(760px, 100%);
+            width: min(860px, 100%);
             max-height: calc(100vh - 40px);
             overflow: auto;
             border-radius: 8px;
@@ -343,7 +355,16 @@
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
+            align-items: start;
             padding: 18px;
+        }
+
+        .form-grid > div {
+            min-width: 0;
+        }
+
+        .form-grid > div:not(.form-wide) .field-help {
+            min-height: 35px;
         }
 
         .form-wide {
@@ -519,47 +540,54 @@
             </div>
             <div class="form-grid">
                 <div>
-                    <label for="username">用户名</label>
+                    <label for="username">用户名<span class="required">*</span></label>
+                    <div class="field-help">必填:需以字母开头,且只能包含字母、数字和下划线。</div>
                     <input id="username" v-model.trim="form.username" type="text" maxlength="32" autocomplete="off">
                     <div class="error">{{ errors.username }}</div>
                 </div>
                 <div>
-                    <label for="realName">姓名</label>
+                    <label for="realName">姓名<span class="required">*</span></label>
+                    <div class="field-help">必填:请输入用户真实姓名,最多 30 个字符。</div>
                     <input id="realName" v-model.trim="form.real_name" type="text" maxlength="30" autocomplete="off">
                     <div class="error">{{ errors.real_name }}</div>
                 </div>
                 <div>
                     <label for="email">邮箱</label>
+                    <div class="field-help">选填:填写后必须是有效邮箱格式,例如 user@example.com。</div>
                     <input id="email" v-model.trim="form.email" type="email" maxlength="100" autocomplete="off">
                     <div class="error">{{ errors.email }}</div>
                 </div>
                 <div>
                     <label for="mobile">手机号</label>
+                    <div class="field-help">选填:填写后必须是 11 位中国大陆手机号,需以 13-19 号段开头。</div>
                     <input id="mobile" v-model.trim="form.mobile" type="text" maxlength="11" autocomplete="off">
                     <div class="error">{{ errors.mobile }}</div>
                 </div>
                 <div>
-                    <label for="roleForm">角色</label>
+                    <label for="roleForm">角色<span class="required">*</span></label>
+                    <div class="field-help">必填:请选择该用户在后台系统中的权限角色。</div>
                     <select id="roleForm" v-model="form.role">
                         <option v-for="(name, key) in roles" :key="key" :value="key">{{ name }}</option>
                     </select>
                     <div class="error">{{ errors.role }}</div>
                 </div>
                 <div>
-                    <label for="statusForm">状态</label>
+                    <label for="statusForm">状态<span class="required">*</span></label>
+                    <div class="field-help">必填:启用账号可正常使用;禁用账号保留数据但不建议允许登录。</div>
                     <select id="statusForm" v-model="form.status">
                         <option v-for="(name, key) in statuses" :key="key" :value="key">{{ name }}</option>
                     </select>
                     <div class="error">{{ errors.status }}</div>
                 </div>
                 <div v-if="!form.id" class="form-wide">
-                    <label for="password">初始密码</label>
+                    <label for="password">初始密码<span class="required">*</span></label>
+                    <div class="field-help">新增用户时必填:至少 8 位,必须同时包含字母和数字。</div>
                     <input id="password" v-model.trim="form.password" type="password" maxlength="64" autocomplete="new-password">
-                    <div class="hint">至少 8 位，需包含字母和数字。</div>
                     <div class="error">{{ errors.password }}</div>
                 </div>
                 <div class="form-wide">
                     <label for="remark">备注</label>
+                    <div class="field-help">选填:用于记录账号说明、岗位或交接信息,最多 255 个字符。</div>
                     <textarea id="remark" v-model.trim="form.remark" maxlength="255"></textarea>
                     <div class="error">{{ errors.remark }}</div>
                 </div>
