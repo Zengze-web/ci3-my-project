@@ -442,7 +442,7 @@
         <form class="toolbar" @submit.prevent="loadUsers(1)">
             <div>
                 <label for="keyword">关键字</label>
-                <input id="keyword" v-model.trim="filters.keyword" type="text" maxlength="50" placeholder="用户名、姓名、邮箱、手机号">
+                <input id="keyword" v-model.trim="filters.keyword" type="text" maxlength="50" placeholder="ID、用户名、姓名、邮箱、手机号">
             </div>
             <div>
                 <label for="role">角色</label>
@@ -541,7 +541,7 @@
             <div class="form-grid">
                 <div>
                     <label for="username">用户名<span class="required">*</span></label>
-                    <div class="field-help">必填:需以字母开头,且只能包含字母、数字和下划线。</div>
+                    <div class="field-help">必填:支持以中文和字母开头,且只能包含字母、数字和下划线。</div>
                     <input id="username" v-model.trim="form.username" type="text" maxlength="32" autocomplete="off">
                     <div class="error">{{ errors.username }}</div>
                 </div>

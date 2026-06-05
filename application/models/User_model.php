@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * 用户数据模型。
- *
  * Model 层只负责数据库读写，不直接读取请求参数，也不输出页面。
  * 数据库操作统一使用 CI Query Builder，避免手写拼接 SQL 带来的注入风险。
  */
@@ -218,12 +216,17 @@ class User_model extends CI_Model
 
         if ( ! empty($filters['keyword'])) {
             $keyword = $filters['keyword'];
-            $this->db->group_start();
-            $this->db->like('username', $keyword);
-            $this->db->or_like('real_name', $keyword);
-            $this->db->or_like('email', $keyword);
-            $this->db->or_like('mobile', $keyword);
-            $this->db->group_end();
+            if (preg_match('/^1[3-9]\d{9}$/', $keyword)) {
+                $this->db->where('mobile', $keyword);
+            } elseif (ctype_digit($keyword)) {
+                $this->db->where('id', (int) $keyword);
+            } else {
+                $this->db->group_start();
+                $this->db->like('username', $keyword);
+                $this->db->or_like('real_name', $keyword);
+                $this->db->or_like('email', $keyword);
+                $this->db->group_end();
+            }
         }
 
         if ( ! empty($filters['role'])) {

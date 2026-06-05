@@ -23,15 +23,13 @@ class Users extends MY_Controller
      */
     private $statuses = array();
 	/**
-	 * db查询所需的类q
+	 * db查询所需的类
 	 *
 	 * @var User_model
 	 */
 	public $User_model;
     /**
-     * 构造函数。
-     *
-     * 页面渲染不强制连接数据库，避免本机没安装 MySQL 时后台页面打不开。
+     * 构造函数
      */
     public function __construct()
     {
@@ -310,9 +308,10 @@ class Users extends MY_Controller
     private function validate_payload($data, $ignoreId, $requirePassword)
     {
         $errors = array();
-		//用户名校验,需以字母开头，4-32 位，只能包含字母、数字和下划线；用户名不能与已有账号重复。
-        if ( ! preg_match('/^[a-zA-Z][a-zA-Z0-9_]{3,31}$/', $data['username'])) {
-            $errors['username'] = $this->lang_text('user_username_rule');
+		//用户名校验,支持中文或字母开头，4-32 位，只能包含中文、字母、数字和下划线；用户名不能与已有账号重复。
+        if ( ! preg_match('/^[\p{Han}A-Za-z][\p{Han}A-Za-z0-9_]{3,31}$/u', $data['username'])) {
+				$errors['username'] = $this->lang_text('user_username_rule');
+
         } elseif ($this->User_model->username_exists($data['username'], $ignoreId)) {
             $errors['username'] = $this->lang_text('user_username_exists');
         }
@@ -404,9 +403,6 @@ class Users extends MY_Controller
 
     /**
      * 清理用户列表缓存。
-     *
-     * 当前 Redis 封装没有做 key 扫描，生产环境建议用版本号缓存或维护索引集合。
-     * 这里通过递增版本 key 预留扩展点，后续可把版本号加入列表缓存 key。
      */
     private function clear_list_cache()
     {

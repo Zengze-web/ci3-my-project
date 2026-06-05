@@ -22,7 +22,7 @@ $lang['user_password_rule'] = '密码至少 8 位，需包含字母和数字';
 $lang['user_password_weak'] = '密码复杂度不足';
 $lang['user_reset_password_success'] = '密码已重置';
 
-$lang['user_username_rule'] = '用户名需以字母开头，4-32 位，可包含字母、数字、下划线';
+$lang['user_username_rule'] = '用户名需以中文或字母开头，4-32 位，可包含中文、字母、数字、下划线';
 $lang['user_username_exists'] = '用户名已存在';
 $lang['user_real_name_rule'] = '姓名不能为空，且不能超过 30 个字符';
 $lang['user_email_invalid'] = '邮箱格式不正确';
