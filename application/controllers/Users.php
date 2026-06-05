@@ -22,7 +22,12 @@ class Users extends MY_Controller
      * @var array
      */
     private $statuses = array();
-
+	/**
+	 * db查询所需的类q
+	 *
+	 * @var User_model
+	 */
+	public $User_model;
     /**
      * 构造函数。
      *
@@ -35,7 +40,7 @@ class Users extends MY_Controller
         $this->load->helper(array('url', 'form', 'app'));
         $this->lang->load('user', 'chinese');
         $this->config->load('user_module', TRUE);
-
+		$this->load->model('User_model');
         $config = $this->config->item('user_module');
         $this->roles = $config['user_roles'];
         $this->statuses = $config['user_statuses'];
@@ -126,7 +131,6 @@ class Users extends MY_Controller
         }
 
         $this->boot_api_dependencies();
-
         $data = $this->payload_from_post(TRUE);
         $errors = $this->validate_payload($data, 0, TRUE);
 
@@ -294,7 +298,7 @@ class Users extends MY_Controller
     }
 
     /**
-     * 校验用户表单数据。
+     * 用户表单校验规则
      *
      * 这里不依赖前端校验，保证即使有人绕过页面直接调接口，后端仍能拦截非法数据。
      *
@@ -306,36 +310,39 @@ class Users extends MY_Controller
     private function validate_payload($data, $ignoreId, $requirePassword)
     {
         $errors = array();
-
+		//用户名校验,需以字母开头，4-32 位，只能包含字母、数字和下划线；用户名不能与已有账号重复。
         if ( ! preg_match('/^[a-zA-Z][a-zA-Z0-9_]{3,31}$/', $data['username'])) {
             $errors['username'] = $this->lang_text('user_username_rule');
         } elseif ($this->User_model->username_exists($data['username'], $ignoreId)) {
             $errors['username'] = $this->lang_text('user_username_exists');
         }
-		//姓名校验
+		//姓名校验,属于必填项，并且名字长度不能大于30个字节，按照utf编码原则，一个中文3字节，一个英文1字节
         if ($data['real_name'] === '' || mb_strlen($data['real_name'], 'UTF-8') > 30) {
             $errors['real_name'] = $this->lang_text('user_real_name_rule');
         }
-
+		//邮箱校验，邮箱属于选填，不填没事，填了格式有误的话会报错
         if ($data['email'] !== '' && ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = $this->lang_text('user_email_invalid');
         }
-
+		// 手机号校验，属于选填，不填没事，填了必须符合11位手机号格式
         if ($data['mobile'] !== '' && ! preg_match('/^1[3-9]\d{9}$/', $data['mobile'])) {
             $errors['mobile'] = $this->lang_text('user_mobile_invalid');
         }
-
+		//角色校验，角色属于必填项，并且提交的角色值必须存在于系统预定义的角色列表中，防止传入非法角色
         if ( ! array_key_exists($data['role'], $this->roles)) {
             $errors['role'] = $this->lang_text('user_role_invalid');
         }
+		//状态校验，状态属于必填项，并且提交的状态值必须存在于系统预定义的状态列表中，防止传入非法状态
 
         if ( ! array_key_exists($data['status'], $this->statuses)) {
             $errors['status'] = $this->lang_text('user_status_invalid');
         }
+		//备注校验，备注属于选填项，不填没事，填写时长度不能大于255个字符，按照UTF-8编码原则计算字符长度
 
         if (mb_strlen($data['remark'], 'UTF-8') > 255) {
             $errors['remark'] = $this->lang_text('user_remark_rule');
         }
+		//密码校验，密码是否必填由$requirePassword控制，新增用户时通常必填，编辑用户时通常选填；如果需要校验，则密码必须满足强密码规则
 
         if ($requirePassword && ! $this->is_strong_password($data['password'])) {
             $errors['password'] = $this->lang_text('user_password_rule');
