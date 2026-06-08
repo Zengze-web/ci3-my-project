@@ -23,6 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
+//访问地址，端口号也可以
 $config['base_url'] = 'http://localhost/ci3-my-project/';
 
 /*

@@ -49,22 +49,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+// 默认控制器
+// 当你直接访问网站根目录（例如 http://localhost:8000/）
+// 系统自动去找名为 "users" 的控制器
 $route['default_controller'] = 'users';
+// 404 页面重写
 $route['404_override'] = '';
+// 是否自动把 URI 里的横线 - 转成下划线 _
+// FALSE = 不自动转换
+// TRUE  = 访问 hello-world 会自动找 hello_world 控制器/方法
 $route['translate_uri_dashes'] = FALSE;
 
 /*
-| -------------------------------------------------------------------------
 | 用户管理模块路由
-| -------------------------------------------------------------------------
-|
 | 页面和接口拆开：页面负责展示，接口负责 JSON 数据交互。
-|
 */
 $route['users'] = 'users/index';
+// 用户列表接口（GET 查询）
 $route['users/api/list'] = 'users/list_api';
+// 单个用户详情接口（根据 ID 查询）
 $route['users/api/(:num)/show'] = 'users/show/$1';
+// 新增用户接口（POST 提交）
 $route['users/api/store'] = 'users/store';
+// 更新用户接口（根据 ID 修改）
 $route['users/api/(:num)/update'] = 'users/update/$1';
+// 删除用户接口（根据 ID 删除）
 $route['users/api/(:num)/delete'] = 'users/delete/$1';
+// 删除用户接口（根据 ID 删除）
 $route['users/api/(:num)/reset-password'] = 'users/reset_password/$1';

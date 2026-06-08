@@ -2,10 +2,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
+| API 错误码配置|
 |--------------------------------------------------------------------------
-| API 错误码配置
-|--------------------------------------------------------------------------
-|
 | Controller 中只传语义化的 code key，例如 USER_NOT_FOUND。
 | 对外响应时统一转换为数字 code 和 language 文案，避免业务代码中散落数字码
 | 和中文提示。
@@ -18,63 +16,122 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['api_codes'] = array(
-    'SUCCESS' => array(
+	/**
+	 * 通用成功
+	 * 用于没有明确业务场景时的成功响应
+	 */
+	'SUCCESS' => array(
         'code' => '0',
         'lang' => 'app_success',
     ),
+	/**
+	 * 通用操作成功
+	 * 用于新增、编辑、删除等通用操作成功场景
+	 */
     'APP_OPERATION_SUCCESS' => array(
         'code' => '0',
         'lang' => 'app_operation_success',
     ),
+	/**
+	 * 通用操作失败
+	 * 用于未细分业务错误时的失败响应
+	 */
     'APP_OPERATION_FAILURE' => array(
         'code' => '50004',
         'lang' => 'app_operation_failure',
     ),
+	/**
+	 * 请求方法不允许
+	 * 例如接口只允许 POST，但实际使用了 GET 请求
+	 */
     'APP_METHOD_NOT_ALLOWED' => array(
         'code' => '40000',
         'lang' => 'app_method_not_allowed',
     ),
-
+	/**
+	 * 用户查询成功
+	 * 用于用户列表、用户详情等查询成功场景
+	 */
     'USER_QUERY_SUCCESS' => array(
         'code' => '0',
         'lang' => 'user_query_success',
     ),
+	/**
+	 * 用户创建成功
+	 * 用于新增用户成功场景
+	 */
     'USER_CREATE_SUCCESS' => array(
         'code' => '0',
         'lang' => 'user_create_success',
     ),
+	/**
+	 * 用户更新成功
+	 * 用于编辑用户资料成功场景
+	 */
     'USER_UPDATE_SUCCESS' => array(
         'code' => '0',
         'lang' => 'user_update_success',
     ),
+	/**
+	 * 用户删除成功
+	 * 用于软删除用户成功场景
+	 */
     'USER_DELETE_SUCCESS' => array(
         'code' => '0',
         'lang' => 'user_delete_success',
     ),
+	/**
+	 * 用户密码重置成功
+	 * 用于管理员重置用户密码成功场景
+	 */
     'USER_RESET_PASSWORD_SUCCESS' => array(
         'code' => '0',
         'lang' => 'user_reset_password_success',
     ),
+	/**
+	 * 用户 ID 无效
+	 * 例如 ID 为空、不是数字、或小于等于 0
+	 */
     'USER_INVALID_ID' => array(
         'code' => '20100',
         'lang' => 'user_invalid_id',
     ),
+	/**
+	 * 用户表单校验失败
+	 * 例如必填项为空、邮箱格式错误、手机号格式错误等
+	 */
     'USER_FORM_INVALID' => array(
         'code' => '20101',
         'lang' => 'user_form_invalid',
     ),
+	/**
+	 * 用户不存在或已删除
+	 * 例如根据 ID 查询、编辑、重置密码时没有找到有效用户
+	 */
     'USER_NOT_FOUND' => array(
         'code' => '20102',
         'lang' => 'user_not_found',
     ),
+	/**
+	 * 用户名已存在
+	 * 用于新增或编辑用户时，用户名与其他用户重复
+	 */
     'USER_USERNAME_EXISTS' => array(
         'code' => '20103',
         'lang' => 'user_username_exists',
     ),
+	/**
+	 * 用户操作失败
+	 * 用于数据库写入失败、更新失败、删除失败等用户模块通用失败场景
+	 */
     'USER_OPERATION_FAILED' => array(
         'code' => '20104',
         'lang' => 'user_operation_failed',
     ),
+	/**
+	 * 用户密码强度不足
+	 * 例如密码长度不足，或未同时包含字母和数字
+	 */
     'USER_PASSWORD_WEAK' => array(
         'code' => '20105',
         'lang' => 'user_password_rule',

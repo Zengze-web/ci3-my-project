@@ -4,8 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * 用户管理控制器。
  *
- * Controller 负责接收请求、做参数校验、调用 Model，并返回页面或 JSON。
- * 数据库读写不放在 Controller 中，保证代码职责清晰，后续也更容易维护和测试。
+ * Controller 层只负责接收请求、做参数校验、调用 Model，并返回页面或 JSON。
  */
 class Users extends MY_Controller
 {

@@ -4,7 +4,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Redis 客户端封装。
  *
- * 业务代码只调用 get/set/delete 等方法，不直接关心 Redis 连接细节。
  * 如果当前机器没有 Redis 服务或 PHP redis 扩展，本类会自动降级，不影响数据库主流程。
  */
 class Redis_client
