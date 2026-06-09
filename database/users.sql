@@ -2,7 +2,7 @@
 -- 设计要点：
 -- 1. username 全局唯一，软删除后也不复用，避免审计和历史数据混淆。
 -- 2. password_hash 只保存 PHP password_hash() 的结果，不保存明文密码。
--- 3. deleted_at 用于软删除，列表查询统一过滤 deleted_at IS NULL。
+-- 3. is_deleted + deleted_at 用于软删除，列表查询统一过滤未删除数据。
 -- 4. 常用筛选字段建立组合索引，降低后台列表查询压力。
 -- ==============================================
 CREATE DATABASE IF NOT EXISTS ci3_admin DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -23,9 +23,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 	                                   `created_at` BIGINT UNSIGNED NOT NULL COMMENT '创建时间戳',
 	                                   `updated_at` BIGINT UNSIGNED NOT NULL COMMENT '更新时间戳',
 	                                   `deleted_at` BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '软删除时间戳',
+	                                   `is_deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '判断是否删除',
 	                                   PRIMARY KEY (`id`),
 	                                   UNIQUE KEY `uk_users_username` (`username`),
-	                                   KEY `idx_users_status_role_deleted` (`status`, `role`, `deleted_at`),
+	                                   KEY `idx_users_list` (`is_deleted`, `status`, `role`, `created_at`),
 	                                   KEY `idx_users_created_at` (`created_at`),
 	                                   KEY `idx_users_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='后台用户表';

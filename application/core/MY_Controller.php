@@ -189,5 +189,6 @@ class MY_Controller extends CI_Controller
 		$this->load->database();
 		$this->load->model('User_model');
 		$this->load->library('Redis_client');
+		$this->load->helper(array('url', 'form', 'app'));
 	}
 }

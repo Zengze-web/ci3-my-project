@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once APPPATH.'core/UserConstants.php';
+
 /**
  * 用户管理控制器。
  *
@@ -33,13 +35,9 @@ class Users extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-
-        $this->load->helper(array('url', 'form', 'app'));
         $this->lang->load('user', 'chinese');
-        $this->config->load('user_module', TRUE);
-        $config = $this->config->item('user_module');
-        $this->roles = $config['user_roles'];
-        $this->statuses = $config['user_statuses'];
+        $this->roles = UserConstants::getRoles();
+        $this->statuses = UserConstants::getStatuses();
     }
 
     /**
@@ -48,7 +46,7 @@ class Users extends MY_Controller
      * 这里只输出页面基础数据，具体列表通过 Vue 调用接口异步加载。
      */
     public function index()
-    {
+    {   $this->load->helper('url');
         $this->load->view('users/index', array(
             'roles' => $this->roles,
             'statuses' => $this->statuses,

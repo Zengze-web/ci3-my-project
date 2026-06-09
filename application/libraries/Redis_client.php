@@ -141,6 +141,26 @@ class Redis_client
         return (bool) $this->redis->del($this->key($key));
     }
 
+    /**
+     * 自增缓存版本号，并为版本 key 设置过期时间。
+     *
+     * @param string $key        业务 key
+     * @param int    $ttlSeconds 过期时间，单位秒
+     * @return int|false
+     */
+    public function incrementWithTtl($key, $ttlSeconds = 300)
+    {
+        if ( ! $this->available) {
+            return FALSE;
+        }
+
+        $redisKey = $this->key($key);
+        $value = $this->redis->incr($redisKey);
+        $this->redis->expire($redisKey, (int) $ttlSeconds);
+
+        return $value;
+    }
+
 
     /**
      * 生成带项目前缀的 Redis key。

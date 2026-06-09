@@ -30,7 +30,7 @@
 | 编辑不存在用户 | 1. 请求 `POST /index.php/users/api/999999/update` | 1. HTTP 404<br>2. `code = 20102`<br>3. `message = 用户不存在或已删除` |
 | 编辑用户时用户名重复 | 1. 请求 `POST /index.php/users/api/{id}/update`<br>2. 将 `username` 改成其他用户已占用的用户名 | 1. HTTP 400<br>2. `code = 20101`<br>3. `data.errors.username = 用户名已存在` |
 | GET 访问编辑接口 | 1. 请求 `GET /index.php/users/api/{id}/update` | 1. HTTP 405<br>2. `code = 40000` |
-| 删除用户成功 | 1. 请求 `POST /index.php/users/api/{id}/delete`<br>2. 再调用列表接口查询该用户<br>3. 检查数据库记录 | 1. HTTP 200<br>2. `success = true`<br>3. `code = 0`<br>4. `message = 用户已删除`<br>5. 列表不再展示该用户<br>6. 数据库记录仍存在，`deleted_at` 有值 |
+| 删除用户成功 | 1. 请求 `POST /index.php/users/api/{id}/delete`<br>2. 再调用列表接口查询该用户<br>3. 检查数据库记录 | 1. HTTP 200<br>2. `success = true`<br>3. `code = 0`<br>4. `message = 用户已删除`<br>5. 列表不再展示该用户<br>6. 数据库记录仍存在，`is_deleted = 1`，`deleted_at` 有值 |
 | 删除不存在用户 | 1. 请求 `POST /index.php/users/api/999999/delete` | 1. HTTP 200<br>2. `success = true`<br>3. `message = 用户已删除` |
 | GET 访问删除接口 | 1. 请求 `GET /index.php/users/api/{id}/delete` | 1. HTTP 405<br>2. `code = 40000`<br>3. 不会删除用户 |
 | 重置密码成功 | 1. 请求 `POST /index.php/users/api/{id}/reset-password`<br>2. 提交参数：`password = Newpass123`<br>3. 检查数据库中该用户密码字段 | 1. HTTP 200<br>2. `success = true`<br>3. `code = 0`<br>4. `message = 密码已重置`<br>5. 数据库中 `password_hash` 发生变化，且不是明文 |

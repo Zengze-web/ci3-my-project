@@ -99,10 +99,16 @@ class Migration_Create_users_table extends CI_Migration
                 'null' => TRUE,
                 'comment' => '软删除时间戳',
             ),
+            'is_deleted' => array(
+                'type' => 'TINYINT',
+                'constraint' => 1,
+                'null' => FALSE,
+                'default' => 0,
+                'comment' => '判断是否删除',
+            ),
         ));
 
         $this->dbforge->add_key('id', TRUE);
-        $this->dbforge->add_key(array('status', 'role', 'deleted_at'));
         $this->dbforge->add_key('created_at');
         $this->dbforge->add_key('deleted_at');
         $this->dbforge->create_table('users', TRUE, array(
@@ -112,6 +118,7 @@ class Migration_Create_users_table extends CI_Migration
         ));
 
         $this->db->query('ALTER TABLE `users` ADD UNIQUE KEY `uk_users_username` (`username`)');
+        $this->db->query('ALTER TABLE `users` ADD KEY `idx_users_list` (`is_deleted`, `status`, `role`, `created_at`)');
     }
 
     /**

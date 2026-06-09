@@ -77,7 +77,7 @@ class User_model extends CI_Model
         $this->db->where('id', (int) $id);
 
         if ( ! $includeDeleted) {
-            $this->db->where('deleted_at IS NULL', NULL, FALSE);
+            $this->notDeleted();
         }
 
         $row = $this->db->get()->row_array();
@@ -129,6 +129,7 @@ class User_model extends CI_Model
             'remark' => $data['remark'],
             'created_at' => $now,
             'updated_at' => $now,
+            'is_deleted' => 0,
         );
 
         $this->db->insert($this->table, $insert);
@@ -148,7 +149,7 @@ class User_model extends CI_Model
     public function update($id, $data)
     {
         $this->db->where('id', (int) $id);
-        $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        $this->notDeleted();
 
         return (bool) $this->db->update($this->table, array(
             'username' => $data['username'],
@@ -174,7 +175,7 @@ class User_model extends CI_Model
     public function resetPassword($id, $password)
     {
         $this->db->where('id', (int) $id);
-        $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        $this->notDeleted();
 
         return (bool) $this->db->update($this->table, array(
             'password_hash' => password_hash($password, PASSWORD_DEFAULT),
@@ -195,12 +196,15 @@ class User_model extends CI_Model
         $now = time();
 
         $this->db->where('id', (int) $id);
-        $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        $this->notDeleted();
 
-        return (bool) $this->db->update($this->table, array(
+        $result = $this->db->update($this->table, array(
+            'is_deleted' => 1,
             'deleted_at' => $now,
             'updated_at' => $now,
         ));
+
+        return (bool) $result && $this->db->affected_rows() > 0;
     }
 
     /**
@@ -212,7 +216,7 @@ class User_model extends CI_Model
      */
     private function applyFilters($filters)
     {
-        $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        $this->notDeleted();
 
         if ( ! empty($filters['keyword'])) {
             $keyword = $filters['keyword'];
@@ -236,5 +240,14 @@ class User_model extends CI_Model
         if ( ! empty($filters['status'])) {
             $this->db->where('status', $filters['status']);
         }
+    }
+
+    /**
+     * 统一有效用户条件，兼容删除标记和软删除时间双字段。
+     */
+    private function notDeleted()
+    {
+        $this->db->where('is_deleted', 0);
+        $this->db->where('deleted_at IS NULL', NULL, FALSE);
     }
 }

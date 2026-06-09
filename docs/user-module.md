@@ -30,12 +30,13 @@
 - `role`、`status`：角色和状态，枚举值在 `application/config/user_module.php` 中统一配置。
 - `last_login_at`：预留登录模块使用，数据库存秒级 Unix 时间戳。
 - `created_at`、`updated_at`、`deleted_at`：创建、更新、软删除时间，数据库存秒级 Unix 时间戳。
+- `is_deleted`：软删除标记，`0` 表示有效，`1` 表示已删除。
 
 索引设计：
 
 - `PRIMARY KEY (id)`：主键查询。
 - `UNIQUE KEY uk_users_username (username)`：保证账号唯一。
-- `KEY idx_users_status_role_deleted (status, role, deleted_at)`：支撑后台状态、角色筛选。
+- `KEY idx_users_list (is_deleted, status, role, created_at)`：支撑后台未删除数据、状态、角色筛选和列表排序。
 - `KEY idx_users_created_at (created_at)`：支撑创建时间排序或扩展筛选。
 - `KEY idx_users_deleted_at (deleted_at)`：支撑软删除过滤。
 
@@ -47,7 +48,7 @@
 - 敏感信息泄漏：列表接口不返回完整手机号和邮箱，只返回脱敏后的 `mobile_masked`、`email_masked`。
 - 密码安全：数据库不保存明文密码，只保存 `password_hash`；重置密码接口独立封装。
 - 请求方法限制：新增、更新、删除、重置密码接口必须 POST，禁止 GET 触发写操作。
-- 软删除：删除用户只写入 `deleted_at`，保留审计线索。
+- 软删除：删除用户只写入 `is_deleted = 1` 和 `deleted_at`，保留审计线索，不做物理删除。
 - 安全响应头：统一设置 `X-Content-Type-Options`、`X-Frame-Options`、`Referrer-Policy`。
 - Cookie：已开启 `cookie_httponly`，降低脚本读取 Cookie 的风险。
 - Redis 降级：Redis 扩展或服务不可用时只影响缓存，不影响主业务流程。
