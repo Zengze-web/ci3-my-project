@@ -4,7 +4,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Redis 客户端封装。
  *
- * 如果当前机器没有 Redis 服务或 PHP redis 扩展，本类会自动降级，不影响数据库主流程。
  */
 class Redis_client
 {
@@ -86,7 +85,7 @@ class Redis_client
      *
      * @return bool
      */
-    public function is_available()
+    public function isAvailable()
     {
         return $this->available;
     }
@@ -142,30 +141,6 @@ class Redis_client
         return (bool) $this->redis->del($this->key($key));
     }
 
-    /**
-     * 递增计数并设置过期时间。
-     *
-     * 常用于登录失败次数、短信发送次数等限流场景。
-     *
-     * @param string $key        业务 key
-     * @param int    $ttlSeconds 过期时间
-     * @return int
-     */
-    public function increment_with_ttl($key, $ttlSeconds)
-    {
-        if ( ! $this->available) {
-            return 0;
-        }
-
-        $fullKey = $this->key($key);
-        $count = (int) $this->redis->incr($fullKey);
-
-        if ($count === 1) {
-            $this->redis->expire($fullKey, (int) $ttlSeconds);
-        }
-
-        return $count;
-    }
 
     /**
      * 生成带项目前缀的 Redis key。
@@ -178,4 +153,3 @@ class Redis_client
         return $this->prefix.$key;
     }
 }
-

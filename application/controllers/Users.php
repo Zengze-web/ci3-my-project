@@ -37,7 +37,6 @@ class Users extends MY_Controller
         $this->load->helper(array('url', 'form', 'app'));
         $this->lang->load('user', 'chinese');
         $this->config->load('user_module', TRUE);
-		$this->load->model('User_model');
         $config = $this->config->item('user_module');
         $this->roles = $config['user_roles'];
         $this->statuses = $config['user_statuses'];
@@ -64,30 +63,30 @@ class Users extends MY_Controller
      *
      * 支持关键字、角色、状态筛选，并用 Redis 做短时间缓存。
      */
-    public function list_api()
+    public function listApi()
     {
-        $this->boot_api_dependencies();
+        $this->bootApiDependencies();
 
-        list($page, $perPage) = $this->pagination_input();
-        $filters = $this->filters_from_request();
+        list($page, $perPage) = $this->paginationInput();
+        $filters = $this->filtersFromRequest();
         $cacheVersion = (int) $this->redis_client->get('users:list:version');
         $cacheKey = 'users:list:'.md5(json_encode(array($filters, $page, $perPage, $cacheVersion)));
         $cached = $this->redis_client->get($cacheKey);
 
         if ($cached !== NULL) {
-            $cached['redis_available'] = $this->redis_client->is_available();
+            $cached['redis_available'] = $this->redis_client->isAvailable();
             $cached['from_cache'] = TRUE;
-            $this->success_json($cached, 'USER_QUERY_SUCCESS');
+            $this->successJson($cached, 'USER_QUERY_SUCCESS');
             return;
         }
 
         $result = $this->User_model->paginate($filters, $page, $perPage);
-        $result['rows'] = $this->safe_rows($result['rows']);
-        $result['redis_available'] = $this->redis_client->is_available();
+        $result['rows'] = $this->safeRows($result['rows']);
+        $result['redis_available'] = $this->redis_client->isAvailable();
         $result['from_cache'] = FALSE;
 
         $this->redis_client->set($cacheKey, $result, 30);
-        $this->success_json($result, 'USER_QUERY_SUCCESS');
+        $this->successJson($result, 'USER_QUERY_SUCCESS');
     }
 
     /**
@@ -100,20 +99,20 @@ class Users extends MY_Controller
      */
     public function show($id)
     {
-        $this->boot_api_dependencies();
+        $this->bootApiDependencies();
 
 
         $id = (int) $id;
         $row = $this->User_model->find($id);
 
         if ( ! $row) {
-            $this->fail_json('USER_NOT_FOUND', array(), 404);
+            $this->failJson('USER_NOT_FOUND', array(), 404);
             return;
         }
 
-        $row = $this->format_user_times($row);
+        $row = $this->formatUserTimes($row);
         unset($row['password_hash'], $row['deleted_at']);
-        $this->success_json(array('user' => $row), 'USER_QUERY_SUCCESS');
+        $this->successJson(array('user' => $row), 'USER_QUERY_SUCCESS');
     }
 
     /**
@@ -123,22 +122,22 @@ class Users extends MY_Controller
      */
     public function store()
     {
-        if ( ! $this->require_post()) {
+        if ( ! $this->requirePost()) {
             return;
         }
 
-        $this->boot_api_dependencies();
-        $data = $this->payload_from_post(TRUE);
-        $errors = $this->validate_payload($data, 0, TRUE);
+        $this->bootApiDependencies();
+        $data = $this->payloadFromPost(TRUE);
+        $errors = $this->validatePayload($data, 0, TRUE);
 
         if ( ! empty($errors)) {
-            $this->fail_json('USER_FORM_INVALID', $errors);
+            $this->failJson('USER_FORM_INVALID', $errors);
             return;
         }
 
         $id = $this->User_model->create($data);
-        $this->clear_list_cache();
-        $this->success_json(array('id' => $id), 'USER_CREATE_SUCCESS');
+        $this->clearListCache();
+        $this->successJson(array('id' => $id), 'USER_CREATE_SUCCESS');
     }
 
     /**
@@ -150,31 +149,31 @@ class Users extends MY_Controller
      */
     public function update($id)
     {
-        if ( ! $this->require_post()) {
+        if ( ! $this->requirePost()) {
             return;
         }
 
-        $this->boot_api_dependencies();
+        $this->bootApiDependencies();
 
         $id = (int) $id;
         $exists = $this->User_model->find($id);
 
         if ( ! $exists) {
-            $this->fail_json('USER_NOT_FOUND', array(), 404);
+            $this->failJson('USER_NOT_FOUND', array(), 404);
             return;
         }
 
-        $data = $this->payload_from_post(FALSE);
-        $errors = $this->validate_payload($data, $id, FALSE);
+        $data = $this->payloadFromPost(FALSE);
+        $errors = $this->validatePayload($data, $id, FALSE);
 
         if ( ! empty($errors)) {
-            $this->fail_json('USER_FORM_INVALID', $errors);
+            $this->failJson('USER_FORM_INVALID', $errors);
             return;
         }
 
         $this->User_model->update($id, $data);
-        $this->clear_list_cache();
-        $this->success_json(array('id' => $id), 'USER_UPDATE_SUCCESS');
+        $this->clearListCache();
+        $this->successJson(array('id' => $id), 'USER_UPDATE_SUCCESS');
     }
 
     /**
@@ -186,22 +185,22 @@ class Users extends MY_Controller
      */
     public function delete($id)
     {
-        if ( ! $this->require_post()) {
+        if ( ! $this->requirePost()) {
             return;
         }
 
-        $this->boot_api_dependencies();
+        $this->bootApiDependencies();
 
         $id = (int) $id;
 
         if ($id <= 0) {
-            $this->fail_json('USER_INVALID_ID');
+            $this->failJson('USER_INVALID_ID');
             return;
         }
 
-        $this->User_model->soft_delete($id);
-        $this->clear_list_cache();
-        $this->success_json(array('id' => $id), 'USER_DELETE_SUCCESS');
+        $this->User_model->softDelete($id);
+        $this->clearListCache();
+        $this->successJson(array('id' => $id), 'USER_DELETE_SUCCESS');
     }
 
     /**
@@ -211,45 +210,34 @@ class Users extends MY_Controller
      *
      * @param int $id 用户 ID
      */
-    public function reset_password($id)
+    public function resetPassword($id)
     {
-        if ( ! $this->require_post()) {
+        if ( ! $this->requirePost()) {
             return;
         }
 
-        $this->boot_api_dependencies();
+        $this->bootApiDependencies();
 
         $id = (int) $id;
-        $password = safe_trim($this->input->post('password', TRUE));
+        $password = safeTrim($this->input->post('password', TRUE));
 
         if ($id <= 0 || ! $this->User_model->find($id)) {
-            $this->fail_json('USER_NOT_FOUND', array(), 404);
+            $this->failJson('USER_NOT_FOUND', array(), 404);
             return;
         }
 
-        if ( ! $this->is_strong_password($password)) {
-            $this->fail_json(
+        if ( ! $this->isStrongPassword($password)) {
+            $this->failJson(
                 'USER_PASSWORD_WEAK',
-                array('password' => $this->lang_text('user_password_weak'))
+                array('password' => $this->langText('USER_PASSWORD_WEAK'))
             );
             return;
         }
 
-        $this->User_model->reset_password($id, $password);
-        $this->success_json(array('id' => $id), 'USER_RESET_PASSWORD_SUCCESS');
+        $this->User_model->resetPassword($id, $password);
+        $this->successJson(array('id' => $id), 'USER_RESET_PASSWORD_SUCCESS');
     }
 
-    /**
-     * 加载接口依赖。
-     *
-     * 数据库和 Model 只在接口请求中加载，避免页面展示阶段依赖本地中间件。
-     */
-    private function boot_api_dependencies()
-    {
-        $this->load->database();
-        $this->load->model('User_model');
-        $this->load->library('Redis_client');
-    }
 
     /**
      * 从 GET 参数生成筛选条件。
@@ -258,14 +246,14 @@ class Users extends MY_Controller
      *
      * @return array
      */
-    private function filters_from_request()
+    private function filtersFromRequest()
     {
         return array(
-            'keyword' => safe_trim($this->input->get('keyword', TRUE)),
-            'role' => safe_trim($this->input->get('role', TRUE)),
-            'status' => safe_trim($this->input->get('status', TRUE)),
-            'order_by' => safe_trim($this->input->get('order_by', TRUE)),
-            'order_dir' => safe_trim($this->input->get('order_dir', TRUE)),
+            'keyword' => safeTrim($this->input->get('keyword', TRUE)),
+            'role' => safeTrim($this->input->get('role', TRUE)),
+            'status' => safeTrim($this->input->get('status', TRUE)),
+            'order_by' => safeTrim($this->input->get('order_by', TRUE)),
+            'order_dir' => safeTrim($this->input->get('order_dir', TRUE)),
         );
     }
 
@@ -275,20 +263,20 @@ class Users extends MY_Controller
      * @param bool $includePassword 是否读取密码字段
      * @return array
      */
-    private function payload_from_post($includePassword)
+    private function payloadFromPost($includePassword)
     {
         $data = array(
-            'username' => safe_trim($this->input->post('username', TRUE)),
-            'real_name' => safe_trim($this->input->post('real_name', TRUE)),
-            'email' => safe_trim($this->input->post('email', TRUE)),
-            'mobile' => safe_trim($this->input->post('mobile', TRUE)),
-            'role' => safe_trim($this->input->post('role', TRUE)),
-            'status' => safe_trim($this->input->post('status', TRUE)),
-            'remark' => safe_trim($this->input->post('remark', TRUE)),
+            'username' => safeTrim($this->input->post('username', TRUE)),
+            'real_name' => safeTrim($this->input->post('real_name', TRUE)),
+            'email' => safeTrim($this->input->post('email', TRUE)),
+            'mobile' => safeTrim($this->input->post('mobile', TRUE)),
+            'role' => safeTrim($this->input->post('role', TRUE)),
+            'status' => safeTrim($this->input->post('status', TRUE)),
+            'remark' => safeTrim($this->input->post('remark', TRUE)),
         );
 
         if ($includePassword) {
-            $data['password'] = safe_trim($this->input->post('password', TRUE));
+            $data['password'] = safeTrim($this->input->post('password', TRUE));
         }
 
         return $data;
@@ -304,46 +292,46 @@ class Users extends MY_Controller
      * @param bool  $requirePassword 是否必须校验密码
      * @return array
      */
-    private function validate_payload($data, $ignoreId, $requirePassword)
+    private function validatePayload($data, $ignoreId, $requirePassword)
     {
         $errors = array();
 		//用户名校验,支持中文或字母开头，4-32 位，只能包含中文、字母、数字和下划线；用户名不能与已有账号重复。
         if ( ! preg_match('/^[\p{Han}A-Za-z][\p{Han}A-Za-z0-9_]{3,31}$/u', $data['username'])) {
-				$errors['username'] = $this->lang_text('user_username_rule');
+				$errors['username'] = $this->langText('USER_USERNAME_RULE');
 
-        } elseif ($this->User_model->username_exists($data['username'], $ignoreId)) {
-            $errors['username'] = $this->lang_text('user_username_exists');
+        } elseif ($this->User_model->usernameExists($data['username'], $ignoreId)) {
+            $errors['username'] = $this->langText('USER_USERNAME_EXISTS');
         }
 		//姓名校验,属于必填项，并且名字长度不能大于30个字节，按照utf编码原则，一个中文3字节，一个英文1字节
         if ($data['real_name'] === '' || mb_strlen($data['real_name'], 'UTF-8') > 30) {
-            $errors['real_name'] = $this->lang_text('user_real_name_rule');
+            $errors['real_name'] = $this->langText('USER_REAL_NAME_RULE');
         }
 		//邮箱校验，邮箱属于选填，不填没事，填了格式有误的话会报错
         if ($data['email'] !== '' && ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = $this->lang_text('user_email_invalid');
+            $errors['email'] = $this->langText('USER_EMAIL_INVALID');
         }
 		// 手机号校验，属于选填，不填没事，填了必须符合11位手机号格式
         if ($data['mobile'] !== '' && ! preg_match('/^1[3-9]\d{9}$/', $data['mobile'])) {
-            $errors['mobile'] = $this->lang_text('user_mobile_invalid');
+            $errors['mobile'] = $this->langText('USER_MOBILE_INVALID');
         }
 		//角色校验，角色属于必填项，并且提交的角色值必须存在于系统预定义的角色列表中，防止传入非法角色
         if ( ! array_key_exists($data['role'], $this->roles)) {
-            $errors['role'] = $this->lang_text('user_role_invalid');
+            $errors['role'] = $this->langText('USER_ROLE_INVALID');
         }
 		//状态校验，状态属于必填项，并且提交的状态值必须存在于系统预定义的状态列表中，防止传入非法状态
 
         if ( ! array_key_exists($data['status'], $this->statuses)) {
-            $errors['status'] = $this->lang_text('user_status_invalid');
+            $errors['status'] = $this->langText('USER_STATUS_INVALID');
         }
 		//备注校验，备注属于选填项，不填没事，填写时长度不能大于255个字符，按照UTF-8编码原则计算字符长度
 
         if (mb_strlen($data['remark'], 'UTF-8') > 255) {
-            $errors['remark'] = $this->lang_text('user_remark_rule');
+            $errors['remark'] = $this->langText('USER_REMARK_RULE');
         }
 		//密码校验，密码是否必填由$requirePassword控制，新增用户时通常必填，编辑用户时通常选填；如果需要校验，则密码必须满足强密码规则
 
-        if ($requirePassword && ! $this->is_strong_password($data['password'])) {
-            $errors['password'] = $this->lang_text('user_password_rule');
+        if ($requirePassword && ! $this->isStrongPassword($data['password'])) {
+            $errors['password'] = $this->langText('USER_PASSWORD_RULE');
         }
 
         return $errors;
@@ -355,7 +343,7 @@ class Users extends MY_Controller
      * @param string $password 密码
      * @return bool
      */
-    private function is_strong_password($password)
+    private function isStrongPassword($password)
     {
         return strlen($password) >= 8
             && preg_match('/[A-Za-z]/', $password)
@@ -370,12 +358,12 @@ class Users extends MY_Controller
      * @param array $rows 原始用户行
      * @return array
      */
-    private function safe_rows($rows)
+    private function safeRows($rows)
     {
         foreach ($rows as &$row) {
-            $row = $this->format_user_times($row);
-            $row['email_masked'] = mask_email($row['email']);
-            $row['mobile_masked'] = mask_mobile($row['mobile']);
+            $row = $this->formatUserTimes($row);
+            $row['email_masked'] = maskEmail($row['email']);
+            $row['mobile_masked'] = maskMobile($row['mobile']);
             unset($row['email'], $row['mobile']);
         }
 
@@ -388,7 +376,7 @@ class Users extends MY_Controller
      * @param array $row 用户数据
      * @return array
      */
-    private function format_user_times($row)
+    private function formatUserTimes($row)
     {
         foreach (array('last_login_at', 'created_at', 'updated_at', 'deleted_at') as $field) {
             if (array_key_exists($field, $row)) {
@@ -403,8 +391,23 @@ class Users extends MY_Controller
     /**
      * 清理用户列表缓存。
      */
-    private function clear_list_cache()
+    private function clearListCache()
     {
-        $this->redis_client->increment_with_ttl('users:list:version', 86400);
+        $this->redis_client->incrementWithTtl('users:list:version', 86400);
     }
+
+	/**
+	 * @return void
+	 *自测redis连接
+	 */
+	public function testRedis()
+	{
+		$redis = new Redis();
+
+		$redis->connect('127.0.0.1', 6379);
+
+		$redis->set('test_key', 'hello redis');
+
+		echo $redis->get('test_key');
+	}
 }

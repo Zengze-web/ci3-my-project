@@ -66,7 +66,7 @@ $route['translate_uri_dashes'] = FALSE;
 */
 $route['users'] = 'users/index';
 // 用户列表接口（GET 查询）
-$route['users/api/list'] = 'users/list_api';
+$route['users/api/list'] = 'users/listApi';
 // 单个用户详情接口（根据 ID 查询）
 $route['users/api/(:num)/show'] = 'users/show/$1';
 // 新增用户接口（POST 提交）
@@ -76,4 +76,4 @@ $route['users/api/(:num)/update'] = 'users/update/$1';
 // 删除用户接口（根据 ID 删除）
 $route['users/api/(:num)/delete'] = 'users/delete/$1';
 // 删除用户接口（根据 ID 删除）
-$route['users/api/(:num)/reset-password'] = 'users/reset_password/$1';
+$route['users/api/(:num)/reset-password'] = 'users/resetPassword/$1';

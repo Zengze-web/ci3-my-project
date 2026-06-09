@@ -35,9 +35,9 @@ class MY_Controller extends CI_Controller
      * @param array  $data    业务数据
      * @param string $codeKey 语义化响应码键
      */
-    protected function success_json($data = array(), $codeKey = 'SUCCESS')
+    protected function successJson($data = array(), $codeKey = 'SUCCESS')
     {
-        $this->json_response(TRUE, $codeKey, $data);
+        $this->jsonResponse(TRUE, $codeKey, $data);
     }
 
     /**
@@ -49,10 +49,10 @@ class MY_Controller extends CI_Controller
      * @param array  $errors     字段级错误
      * @param int    $httpStatus HTTP 状态码
      */
-    protected function fail_json($codeKey = 'APP_OPERATION_FAILURE', $errors = array(), $httpStatus = 400)
+    protected function failJson($codeKey = 'APP_OPERATION_FAILURE', $errors = array(), $httpStatus = 400)
     {
         $this->output->set_status_header($httpStatus);
-        $this->json_response(FALSE, $codeKey, array('errors' => $errors));
+        $this->jsonResponse(FALSE, $codeKey, array('errors' => $errors));
     }
 
     /**
@@ -63,16 +63,16 @@ class MY_Controller extends CI_Controller
      *
      * @return bool
      */
-    protected function require_post()
+    protected function requirePost()
     {
         if ($this->input->method(TRUE) === 'POST') {
             return TRUE;
         }
 
         $this->output->set_header('Allow: POST');
-        $this->fail_json(
+        $this->failJson(
             'APP_METHOD_NOT_ALLOWED',
-            array('method' => $this->lang_text('app_method_post_required')),
+            array('method' => $this->langText('APP_METHOD_POST_REQUIRED')),
             405
         );
 
@@ -86,7 +86,7 @@ class MY_Controller extends CI_Controller
      * @param string $fallback 兜底文案
      * @return string
      */
-    protected function lang_text($key, $fallback = '')
+    protected function langText($key, $fallback = '')
     {
         $line = $this->lang->line($key);
 
@@ -99,7 +99,7 @@ class MY_Controller extends CI_Controller
      * @param string $codeKey 语义化响应码键
      * @return array
      */
-    protected function api_code_item($codeKey)
+    protected function apiCodeItem($codeKey)
     {
         $codes = $this->config->item('api_codes', 'api_codes');
 
@@ -113,7 +113,7 @@ class MY_Controller extends CI_Controller
 
         return array(
             'code' => '50004',
-            'lang' => 'app_unknown_error',
+            'lang' => 'APP_UNKNOWN_ERROR',
         );
     }
 
@@ -123,11 +123,11 @@ class MY_Controller extends CI_Controller
      * @param string $codeKey 语义化响应码键
      * @return string
      */
-    protected function api_message($codeKey)
+    protected function apiMessage($codeKey)
     {
-        $item = $this->api_code_item($codeKey);
+        $item = $this->apiCodeItem($codeKey);
 
-        return $this->lang_text($item['lang'], $this->lang_text('app_unknown_error', '未知错误'));
+        return $this->langText($item['lang'], $this->langText('APP_UNKNOWN_ERROR', '未知错误'));
     }
 
     /**
@@ -140,14 +140,14 @@ class MY_Controller extends CI_Controller
      * @param string $codeKey  语义化响应码键
      * @param array  $data     响应数据
      */
-    private function json_response($success, $codeKey, $data)
+    private function jsonResponse($success, $codeKey, $data)
     {
-        $item = $this->api_code_item($codeKey);
+        $item = $this->apiCodeItem($codeKey);
 
         $payload = array(
             'success' => $success,
             'code' => $item['code'],
-            'message' => $this->api_message($codeKey),
+            'message' => $this->apiMessage($codeKey),
             'data' => $data,
             'csrf' => array(
                 'name' => $this->security->get_csrf_token_name(),
@@ -167,7 +167,7 @@ class MY_Controller extends CI_Controller
      *
      * @return array
      */
-    protected function pagination_input()
+    protected function paginationInput()
     {
         $page = (int) $this->input->get('page', TRUE);
         $perPage = (int) $this->input->get('per_page', TRUE);
@@ -178,4 +178,16 @@ class MY_Controller extends CI_Controller
 
         return array($page, $perPage);
     }
+
+	/**
+	 * 加载接口依赖。
+	 *
+	 * 数据库和 Model 只在接口请求中加载，避免页面展示阶段依赖本地中间件。
+	 */
+	public function bootApiDependencies()
+	{
+		$this->load->database();
+		$this->load->model('User_model');
+		$this->load->library('Redis_client');
+	}
 }

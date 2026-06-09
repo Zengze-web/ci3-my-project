@@ -22,7 +22,7 @@ $config['api_codes'] = array(
 	 */
 	'SUCCESS' => array(
         'code' => '0',
-        'lang' => 'app_success',
+        'lang' => 'APP_SUCCESS',
     ),
 	/**
 	 * 通用操作成功
@@ -30,7 +30,7 @@ $config['api_codes'] = array(
 	 */
     'APP_OPERATION_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'app_operation_success',
+        'lang' => 'APP_OPERATION_SUCCESS',
     ),
 	/**
 	 * 通用操作失败
@@ -38,7 +38,7 @@ $config['api_codes'] = array(
 	 */
     'APP_OPERATION_FAILURE' => array(
         'code' => '50004',
-        'lang' => 'app_operation_failure',
+        'lang' => 'APP_OPERATION_FAILURE',
     ),
 	/**
 	 * 请求方法不允许
@@ -46,7 +46,7 @@ $config['api_codes'] = array(
 	 */
     'APP_METHOD_NOT_ALLOWED' => array(
         'code' => '40000',
-        'lang' => 'app_method_not_allowed',
+        'lang' => 'APP_METHOD_NOT_ALLOWED',
     ),
 	/**
 	 * 用户查询成功
@@ -54,7 +54,7 @@ $config['api_codes'] = array(
 	 */
     'USER_QUERY_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'user_query_success',
+        'lang' => 'USER_QUERY_SUCCESS',
     ),
 	/**
 	 * 用户创建成功
@@ -62,7 +62,7 @@ $config['api_codes'] = array(
 	 */
     'USER_CREATE_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'user_create_success',
+        'lang' => 'USER_CREATE_SUCCESS',
     ),
 	/**
 	 * 用户更新成功
@@ -70,7 +70,7 @@ $config['api_codes'] = array(
 	 */
     'USER_UPDATE_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'user_update_success',
+        'lang' => 'USER_UPDATE_SUCCESS',
     ),
 	/**
 	 * 用户删除成功
@@ -78,7 +78,7 @@ $config['api_codes'] = array(
 	 */
     'USER_DELETE_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'user_delete_success',
+        'lang' => 'USER_DELETE_SUCCESS',
     ),
 	/**
 	 * 用户密码重置成功
@@ -86,7 +86,7 @@ $config['api_codes'] = array(
 	 */
     'USER_RESET_PASSWORD_SUCCESS' => array(
         'code' => '0',
-        'lang' => 'user_reset_password_success',
+        'lang' => 'USER_RESET_PASSWORD_SUCCESS',
     ),
 	/**
 	 * 用户 ID 无效
@@ -94,7 +94,7 @@ $config['api_codes'] = array(
 	 */
     'USER_INVALID_ID' => array(
         'code' => '20100',
-        'lang' => 'user_invalid_id',
+        'lang' => 'USER_INVALID_ID',
     ),
 	/**
 	 * 用户表单校验失败
@@ -102,7 +102,7 @@ $config['api_codes'] = array(
 	 */
     'USER_FORM_INVALID' => array(
         'code' => '20101',
-        'lang' => 'user_form_invalid',
+        'lang' => 'USER_FORM_INVALID',
     ),
 	/**
 	 * 用户不存在或已删除
@@ -110,7 +110,7 @@ $config['api_codes'] = array(
 	 */
     'USER_NOT_FOUND' => array(
         'code' => '20102',
-        'lang' => 'user_not_found',
+        'lang' => 'USER_NOT_FOUND',
     ),
 	/**
 	 * 用户名已存在
@@ -118,7 +118,7 @@ $config['api_codes'] = array(
 	 */
     'USER_USERNAME_EXISTS' => array(
         'code' => '20103',
-        'lang' => 'user_username_exists',
+        'lang' => 'USER_USERNAME_EXISTS',
     ),
 	/**
 	 * 用户操作失败
@@ -126,7 +126,7 @@ $config['api_codes'] = array(
 	 */
     'USER_OPERATION_FAILED' => array(
         'code' => '20104',
-        'lang' => 'user_operation_failed',
+        'lang' => 'USER_OPERATION_FAILED',
     ),
 	/**
 	 * 用户密码强度不足
@@ -134,6 +134,6 @@ $config['api_codes'] = array(
 	 */
     'USER_PASSWORD_WEAK' => array(
         'code' => '20105',
-        'lang' => 'user_password_rule',
+        'lang' => 'USER_PASSWORD_RULE',
     ),
 );

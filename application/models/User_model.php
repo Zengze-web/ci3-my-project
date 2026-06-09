@@ -36,12 +36,12 @@ class User_model extends CI_Model
         $offset = ($page - 1) * $perPage;
 
         $this->db->from($this->table);
-        $this->apply_filters($filters);
+        $this->applyFilters($filters);
         $total = (int) $this->db->count_all_results();
 
         $this->db->select('id, username, real_name, email, mobile, role, status, last_login_at, created_at, updated_at');
         $this->db->from($this->table);
-        $this->apply_filters($filters);
+        $this->applyFilters($filters);
 
         $orderBy = isset($filters['order_by']) ? $filters['order_by'] : 'id';
         $orderDir = isset($filters['order_dir']) && strtolower($filters['order_dir']) === 'asc' ? 'asc' : 'desc';
@@ -94,7 +94,7 @@ class User_model extends CI_Model
      * @param int    $ignoreId 更新时忽略当前用户 ID
      * @return bool
      */
-    public function username_exists($username, $ignoreId = 0)
+    public function usernameExists($username, $ignoreId = 0)
     {
         $this->db->from($this->table);
         $this->db->where('username', $username);
@@ -171,7 +171,7 @@ class User_model extends CI_Model
      * @param string $password 新密码
      * @return bool
      */
-    public function reset_password($id, $password)
+    public function resetPassword($id, $password)
     {
         $this->db->where('id', (int) $id);
         $this->db->where('deleted_at IS NULL', NULL, FALSE);
@@ -190,7 +190,7 @@ class User_model extends CI_Model
      * @param int $id 用户 ID
      * @return bool
      */
-    public function soft_delete($id)
+    public function softDelete($id)
     {
         $now = time();
 
@@ -210,7 +210,7 @@ class User_model extends CI_Model
      *
      * @param array $filters 筛选条件
      */
-    private function apply_filters($filters)
+    private function applyFilters($filters)
     {
         $this->db->where('deleted_at IS NULL', NULL, FALSE);
 

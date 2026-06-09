@@ -7,10 +7,10 @@
 $options = getopt('', array('host::', 'user::', 'pass::', 'database::'));
 
 $host = isset($options['host']) ? $options['host'] : (getenv('CI_DB_HOST') ?: '127.0.0.1');
-$user = isset($options['user']) ? $options['user'] : (getenv('CI_DB_USER') ?: 'root');
+$user = isset($options['user']) ? $options['user'] : (getenv('CI_DB_USER') ?: 'ci3_dev');
 $pass = isset($options['pass']) ? $options['pass'] : getenv('CI_DB_PASS');
 $name = isset($options['database']) ? $options['database'] : (getenv('CI_DB_NAME') ?: 'ci3_admin');
-$pass = $pass === false ? '' : $pass;
+$pass = $pass === false ? 'Ci3Local@2026' : $pass;
 
 $mysqli = @new mysqli($host, $user, $pass, $name);
 

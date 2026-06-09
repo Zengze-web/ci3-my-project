@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 封装公共函数，工具方法
  */
 
-if ( ! function_exists('mask_mobile')) {
+if ( ! function_exists('maskMobile')) {
     /**
      * 手机号脱敏展示。
      *
@@ -13,7 +13,7 @@ if ( ! function_exists('mask_mobile')) {
      * @param string $mobile 手机号
      * @return string
      */
-    function mask_mobile($mobile)
+    function maskMobile($mobile)
     {
         if ($mobile === '' || $mobile === NULL) {
             return '';
@@ -23,7 +23,7 @@ if ( ! function_exists('mask_mobile')) {
     }
 }
 
-if ( ! function_exists('mask_email')) {
+if ( ! function_exists('maskEmail')) {
     /**
      * 邮箱脱敏展示。
      *
@@ -32,7 +32,7 @@ if ( ! function_exists('mask_email')) {
      * @param string $email 邮箱
      * @return string
      */
-    function mask_email($email)
+    function maskEmail($email)
     {
         if ($email === '' || $email === NULL || strpos($email, '@') === FALSE) {
             return '';
@@ -44,7 +44,7 @@ if ( ! function_exists('mask_email')) {
     }
 }
 
-if ( ! function_exists('safe_trim')) {
+if ( ! function_exists('safeTrim')) {
     /**
      * 安全 trim。
      *
@@ -53,9 +53,8 @@ if ( ! function_exists('safe_trim')) {
      * @param mixed $value 原始值
      * @return string
      */
-    function safe_trim($value)
+    function safeTrim($value)
     {
         return is_string($value) ? trim($value) : '';
     }
 }
-
