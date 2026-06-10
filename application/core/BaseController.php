@@ -31,6 +31,7 @@ class BaseController extends CI_Controller
 
         $this->config->load('api_codes', TRUE);
         $this->load->helper('url');
+		$this->ensureSession();
         $this->loadMessages();
         $this->output
             ->set_header('X-Content-Type-Options: nosniff')
@@ -214,4 +215,13 @@ class BaseController extends CI_Controller
             $this->messages = $lang;
         }
     }
+	/**
+	 * 登录Session。
+	 */
+	private function ensureSession()
+	{
+		if ( ! isset($this->session)) {
+			$this->load->library('session');
+		}
+	}
 }

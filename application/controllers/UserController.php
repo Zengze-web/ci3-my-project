@@ -28,7 +28,6 @@ class UserController extends BaseController
      */
     public function login()
     {
-        $this->ensureSession();
 
         if ($this->session->userdata('login_user')) {
             redirect('users');
@@ -77,7 +76,6 @@ class UserController extends BaseController
      */
     public function logout()
     {
-        $this->ensureSession();
         $this->userService->logout();
         redirect('users/login');
     }
@@ -87,7 +85,6 @@ class UserController extends BaseController
      */
     public function index()
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(FALSE)) {
             return;
@@ -109,7 +106,6 @@ class UserController extends BaseController
      */
     public function listApi()
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE)) {
             return;
@@ -128,7 +124,6 @@ class UserController extends BaseController
      */
     public function show($id)
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE)) {
             return;
@@ -149,7 +144,6 @@ class UserController extends BaseController
      */
     public function store()
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE) || ! $this->requirePost()) {
             return;
@@ -172,7 +166,6 @@ class UserController extends BaseController
      */
     public function update($id)
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE) || ! $this->requirePost()) {
             return;
@@ -200,7 +193,6 @@ class UserController extends BaseController
      */
     public function delete($id)
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE) || ! $this->requirePost()) {
             return;
@@ -223,7 +215,6 @@ class UserController extends BaseController
      */
     public function resetPassword($id)
     {
-        $this->ensureSession();
 
         if ( ! $this->requireLogin(TRUE) || ! $this->requirePost()) {
             return;
@@ -297,7 +288,6 @@ class UserController extends BaseController
      */
     private function requireLogin($json)
     {
-        $this->ensureSession();
 
         if ($this->session->userdata('login_user')) {
             return TRUE;
@@ -325,13 +315,5 @@ class UserController extends BaseController
         return isset($array[$key]) ? $array[$key] : $default;
     }
 
-    /**
-     * 按需加载 Session。
-     */
-    private function ensureSession()
-    {
-        if ( ! isset($this->session)) {
-            $this->load->library('session');
-        }
-    }
+
 }
