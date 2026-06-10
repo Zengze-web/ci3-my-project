@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * 用户模块常量封装
+ * 用户模块常量。
  */
 class UserConstants
 {

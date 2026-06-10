@@ -7,8 +7,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 所有业务控制器都可以继承这个类，把“统一响应、分页参数、安全响应头”
  * 这类横切逻辑集中放在这里，避免每个 Controller 重复写同样的代码。
  */
-class MY_Controller extends CI_Controller
+class BaseController extends CI_Controller
 {
+	//提示ide用的
+	public $input;
+	public $config;
+	public $output;
+
+    /**
+     * 常量化提示文案。
+     *
+     * @var array
+     */
+    private $messages = array();
     /**
      * 构造函数会在每个请求进入业务 Controller 前执行。
      *
@@ -19,8 +30,8 @@ class MY_Controller extends CI_Controller
         parent::__construct();
 
         $this->config->load('api_codes', TRUE);
-        $this->lang->load('app', 'chinese');
-
+        $this->load->helper('url');
+        $this->loadMessages();
         $this->output
             ->set_header('X-Content-Type-Options: nosniff')
             ->set_header('X-Frame-Options: SAMEORIGIN')
@@ -90,7 +101,15 @@ class MY_Controller extends CI_Controller
     {
         $line = $this->lang->line($key);
 
-        return $line === FALSE ? $fallback : $line;
+        if ($line !== FALSE) {
+            return $line;
+        }
+
+        if (isset($this->messages[$key])) {
+            return $this->messages[$key];
+        }
+
+        return $fallback;
     }
 
     /**
@@ -163,32 +182,36 @@ class MY_Controller extends CI_Controller
     /**
      * 获取并修正分页参数。
      *
-     * 这里限制每页最大数量，避免接口被传入超大 per_page 后造成数据库压力。
+     * 这里限制每页最大数量，避免接口被传入超大 $PageSize后造成数据库压力。
      *
      * @return array
      */
     protected function paginationInput()
     {
         $page = (int) $this->input->get('page', TRUE);
-        $perPage = (int) $this->input->get('per_page', TRUE);
+        $PageSize = (int) $this->input->get('per_page', TRUE);
+        if ($PageSize <= 0) {
+            $PageSize = (int) $this->input->get('page_size', TRUE);
+        }
 
         $page = $page > 0 ? $page : 1;
-        $perPage = $perPage > 0 ? $perPage : 10;
-        $perPage = min($perPage, 100);
+		$PageSize = $PageSize > 0 ? $PageSize : 10;
+		$PageSize = min($PageSize, 100);
 
-        return array($page, $perPage);
+        return array($page, $PageSize);
     }
 
-	/**
-	 * 加载接口依赖。
-	 *
-	 * 数据库和 Model 只在接口请求中加载，避免页面展示阶段依赖本地中间件。
-	 */
-	public function bootApiDependencies()
-	{
-		$this->load->database();
-		$this->load->model('User_model');
-		$this->load->library('Redis_client');
-		$this->load->helper(array('url', 'form', 'app'));
-	}
+    /**
+     * 加载当前重构后的消息常量文件。
+     */
+    private function loadMessages()
+    {
+        $lang = array();
+        $path = APPPATH.'constatnt/MessageConstants.php';
+
+        if (is_file($path)) {
+            require $path;
+            $this->messages = $lang;
+        }
+    }
 }

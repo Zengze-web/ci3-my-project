@@ -60,6 +60,14 @@
             box-shadow: var(--shadow);
         }
 
+        .topbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
         h1 {
             margin: 0;
             font-size: 22px;
@@ -436,7 +444,10 @@
                 <h1>账号管理</h1>
                 <p class="subtle">维护后台账号、角色和启用状态</p>
             </div>
-            <button class="btn btn-primary" type="button" @click="openCreate">新增用户</button>
+            <div class="topbar-actions">
+                <button class="btn btn-primary" type="button" @click="openCreate">新增用户</button>
+                <button class="btn btn-secondary" type="button" @click="logout">退出登录</button>
+            </div>
         </div>
 
         <form class="toolbar" @submit.prevent="loadUsers(1)">
@@ -738,6 +749,9 @@
                 this.errors = {};
                 this.form = this.emptyForm();
                 this.formVisible = true;
+            },
+            logout() {
+                window.location.href = API_BASE + '/logout';
             },
             async openEdit(row) {
                 this.errors = {};

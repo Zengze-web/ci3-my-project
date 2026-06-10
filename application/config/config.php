@@ -38,6 +38,17 @@ $config['base_url'] = 'http://localhost/ci3-my-project/';
 */
 $config['index_page'] = 'index.php';
 
+// 访问地址。优先使用环境变量，未配置时按当前请求自动生成，避免 localhost/127.0.0.1 混用导致 Cookie/CSRF 失效。
+$base_url = getenv('CI_BASE_URL');
+if ($base_url === FALSE || $base_url === '') {
+	$scheme = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+	$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+	$script = isset($_SERVER['SCRIPT_NAME']) ? str_replace('\\', '/', $_SERVER['SCRIPT_NAME']) : '/index.php';
+	$base_path = rtrim(str_replace('/index.php', '', $script), '/');
+	$base_url = $scheme.'://'.$host.($base_path === '' ? '/' : $base_path.'/');
+}
+$config['base_url'] = rtrim($base_url, '/').'/';
+
 /*
 |--------------------------------------------------------------------------
 | URI PROTOCOL
@@ -117,7 +128,7 @@ $config['enable_hooks'] = FALSE;
 | https://codeigniter.com/userguide3/general/creating_libraries.html
 |
 */
-$config['subclass_prefix'] = 'MY_';
+$config['subclass_prefix'] = 'Base';
 
 /*
 |--------------------------------------------------------------------------
@@ -388,7 +399,7 @@ $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_samesite'] = 'Lax';
 $config['sess_expiration'] = 7200;
-$config['sess_save_path'] = NULL;
+$config['sess_save_path'] = APPPATH.'cache/sessions';
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;

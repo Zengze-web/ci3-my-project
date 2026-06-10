@@ -5,9 +5,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | API 错误码配置|
 |--------------------------------------------------------------------------
 | Controller 中只传语义化的 code key，例如 USER_NOT_FOUND。
-| 对外响应时统一转换为数字 code 和 language 文案，避免业务代码中散落数字码
-| 和中文提示。
-|
 | 数字码结构：A BB CC
 | A  = 错误类型：1 消息，2 验证错误，4 访问错误，5 服务错误
 | BB = 模块编号：00 通用模块，01 用户模块
@@ -88,6 +85,20 @@ $config['api_codes'] = array(
         'code' => '0',
         'lang' => 'USER_RESET_PASSWORD_SUCCESS',
     ),
+    /**
+     * 用户登录成功
+     */
+    'USER_LOGIN_SUCCESS' => array(
+        'code' => '0',
+        'lang' => 'USER_LOGIN_SUCCESS',
+    ),
+    /**
+     * 用户退出成功
+     */
+    'USER_LOGOUT_SUCCESS' => array(
+        'code' => '0',
+        'lang' => 'USER_LOGOUT_SUCCESS',
+    ),
 	/**
 	 * 用户 ID 无效
 	 * 例如 ID 为空、不是数字、或小于等于 0
@@ -135,5 +146,26 @@ $config['api_codes'] = array(
     'USER_PASSWORD_WEAK' => array(
         'code' => '20105',
         'lang' => 'USER_PASSWORD_RULE',
+    ),
+    /**
+     * 用户登录失败
+     */
+    'USER_LOGIN_FAILED' => array(
+        'code' => '20106',
+        'lang' => 'USER_LOGIN_FAILED',
+    ),
+    /**
+     * 登录账号已禁用
+     */
+    'USER_LOGIN_DISABLED' => array(
+        'code' => '20107',
+        'lang' => 'USER_LOGIN_DISABLED',
+    ),
+    /**
+     * 用户未登录
+     */
+    'USER_LOGIN_REQUIRED' => array(
+        'code' => '40101',
+        'lang' => 'USER_LOGIN_REQUIRED',
     ),
 );

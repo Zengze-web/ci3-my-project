@@ -27,8 +27,6 @@ if ( ! function_exists('maskEmail')) {
     /**
      * 邮箱脱敏展示。
      *
-     * 保留首字符和域名，既能辅助后台人员识别账号，又避免完整邮箱暴露。
-     *
      * @param string $email 邮箱
      * @return string
      */
@@ -48,7 +46,7 @@ if ( ! function_exists('safeTrim')) {
     /**
      * 安全 trim。
      *
-     * CI 的 input 类负责处理输入来源，这里只做统一字符串整理，避免 NULL 或数组被误处理。
+     * 对于输入做统一字符串整理，功能就是规避首尾空格，避免 NULL 或数组被误处理。
      *
      * @param mixed $value 原始值
      * @return string

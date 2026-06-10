@@ -2,8 +2,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Model 层只负责数据库读写，不直接读取请求参数，也不输出页面。
- * 数据库操作统一使用 CI Query Builder，避免手写拼接 SQL 带来的注入风险。
+ * Model层只负责数据库读写操作
+
  */
 class User_model extends CI_Model
 {
@@ -79,6 +79,24 @@ class User_model extends CI_Model
         if ( ! $includeDeleted) {
             $this->notDeleted();
         }
+
+        $row = $this->db->get()->row_array();
+
+        return $row ? $row : NULL;
+    }
+
+    /**
+     * 按用户名读取登录所需账号数据。
+     *
+     * @param string $username 用户名
+     * @return array|null
+     */
+    public function findByUsername($username)
+    {
+        $this->db->select('id, username, password_hash, real_name, role, status');
+        $this->db->from($this->table);
+        $this->db->where('username', $username);
+        $this->notDeleted();
 
         $row = $this->db->get()->row_array();
 
@@ -179,6 +197,23 @@ class User_model extends CI_Model
 
         return (bool) $this->db->update($this->table, array(
             'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+            'updated_at' => time(),
+        ));
+    }
+
+    /**
+     * 记录用户最近一次登录时间。
+     *
+     * @param int $id 用户 ID
+     * @return bool
+     */
+    public function updateLastLogin($id)
+    {
+        $this->db->where('id', (int) $id);
+        $this->notDeleted();
+
+        return (bool) $this->db->update($this->table, array(
+            'last_login_at' => time(),
             'updated_at' => time(),
         ));
     }
